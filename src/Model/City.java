@@ -10,12 +10,20 @@ import java.util.List;
  */
 class City {
 
-    private List<Neighborhood> neighborhoods;
+    private Neighborhood[][] neighborhoods;
     private String cityName;
 
-    public City(String cityName, Neighborhood[] neighborhoods) {
+    public City(String cityName, int width, int height, int population) {
         this.cityName = cityName;
-        this.neighborhoods = Arrays.asList(neighborhoods);
+        this.neighborhoods = new Neighborhood[width][height];
+        int populationDensity = population / (width * height);
+
+        for (int i = 0; i < width; i++) {
+            for (int j = 0; j < height; j++) {
+                this.neighborhoods[i][j] = new Neighborhood(populationDensity);
+            }
+        }
+
     }
 
     public String getCityName() {
