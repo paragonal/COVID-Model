@@ -12,4 +12,8 @@ public class Position {
         return new Position(this.x + other.x, this.y + other.y);
     }
 
+    public Position scale (double factor) {
+        return new Position(this.x * factor, this.y * factor);
+    }
+
 }

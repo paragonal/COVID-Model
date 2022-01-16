@@ -1,16 +1,60 @@
 package Model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class Person {
     public Position position;
+    public Position velocity;
 
-    boolean sick, recovered, vaccinated;
+    private boolean sick, recovered;
 
-    public Person (Position position) {
+    private Set<String> immunities = new HashSet<>();
+
+    private int ticksLived = 0;
+    private int tickInfected;
+    private Virus currentVirus;
+
+    public Person (Position position, Position velocity) {
         this.position = position;
+        this.velocity = velocity;
         this.sick = false;
         this.recovered = false;
-        this.vaccinated = false;
     }
+
+    public void update(double dt) {
+        this.ticksLived += 1;
+        if ((this.ticksLived - tickInfected) * dt > currentVirus.recoveryTime) {
+            sick = false;
+            recovered = true;
+            immunities.add(currentVirus.identifier);
+            currentVirus = null;
+        }
+    }
+
+    /**
+     * See whether our person becomes infected, prob of being infected is based on infected ratio ^ (1/infectivity)
+     * Has the nice property of higher infectivity always resulting in higher chance of being infected for same ratio
+     *
+     * @param infectedRatio Ratio of people in neighborhood who are infected
+     * @param virus The virus in question
+     * @return true if newly infected false otherwise
+     */
+    public boolean infectionStep(double infectedRatio, Virus virus) {
+        if (!sick && !recovered && Util.rng.nextDouble() < Math.pow(infectedRatio, 1 / virus.infectivity)) {
+            this.sick = true;
+            this.tickInfected = ticksLived;
+            currentVirus = virus;
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isSick () {
+        return sick;
+    }
+
+
 
 }
 
