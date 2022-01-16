@@ -24,12 +24,12 @@ public class Person {
 
     public void update(double dt) {
         this.ticksLived += 1;
-        if ((this.ticksLived - tickInfected) * dt > currentVirus.recoveryTime) {
+        if (sick && this.ticksLived - tickInfected > currentVirus.recoveryTime) {
             sick = false;
             recovered = true;
-            immunities.add(currentVirus.identifier);
             currentVirus = null;
         }
+        this.position.add(this.velocity.scale(dt));
     }
 
     /**
@@ -41,13 +41,19 @@ public class Person {
      * @return true if newly infected false otherwise
      */
     public boolean infectionStep(double infectedRatio, Virus virus) {
-        if (!sick && !recovered && Util.rng.nextDouble() < Math.pow(infectedRatio, 1 / virus.infectivity)) {
-            this.sick = true;
-            this.tickInfected = ticksLived;
-            currentVirus = virus;
+        if (!sick && !immunities.contains(virus.identifier)
+                && Util.rng.nextDouble() < Math.pow(infectedRatio, 1 / virus.infectivity)) {
+            makeSick(virus);
             return true;
         }
         return false;
+    }
+
+    public void makeSick(Virus virus) {
+        this.sick = true;
+        this.tickInfected = ticksLived;
+        currentVirus = virus;
+        immunities.add(currentVirus.identifier);
     }
 
     public boolean isSick () {

@@ -16,10 +16,13 @@ public class Neighborhood {
      * Update our neighborhood
      * Return any residents who are leaving the neighborhood so city can deal with them
      */
-    public Person[] update (Virus virus, double dt) {
-        infectResidents(virus);
-        updateResidents(dt);
+    public Person[] updatePositions (double dt) {
         return moveResidents(dt);
+    }
+
+    public int updateInfections (Virus virus, double dt) {
+        updateResidents(dt);
+        return infectResidents(virus);
     }
 
     private void updateResidents (double dt) {
@@ -34,6 +37,7 @@ public class Neighborhood {
             if (p.position.x < 0 || p.position.x > width || p.position.y < 0 || p.position.y > height)
                 departingResidents.add(p);
         }
+        residents.removeAll(departingResidents);
         return departingResidents.toArray(new Person[0]);
     }
 
@@ -48,7 +52,7 @@ public class Neighborhood {
         this.height = 1;
         this.residents = new ArrayList<>();
         for (int i = 0; i < residents; i++) {
-            this.residents.add(new Person(Util.randomPosition(), Util.randomPosition().add(new Position(-0.5,-0.5))));
+            this.residents.add(new Person(Util.randomPosition(), Util.randomVelocity()));
         }
     }
 

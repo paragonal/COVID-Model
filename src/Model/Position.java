@@ -8,6 +8,10 @@ public class Position {
         this.y = y;
     }
 
+    public Position clone () {
+        return new Position(x, y);
+    }
+
     public Position add (Position other) {
         return new Position(this.x + other.x, this.y + other.y);
     }
@@ -16,4 +20,11 @@ public class Position {
         return new Position(this.x * factor, this.y * factor);
     }
 
+    public double mag() {
+        return Math.sqrt(this.x * this.x + this.y * this.y);
+    }
+
+    public Position unit() {
+        return this.clone().scale(1 / this.mag());
+    }
 }
