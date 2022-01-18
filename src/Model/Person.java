@@ -7,7 +7,7 @@ public class Person {
     public Position position;
     public Position velocity;
 
-    private boolean sick, recovered;
+    public boolean sick, recovered;
 
     private Set<String> immunities = new HashSet<>();
 
@@ -55,12 +55,6 @@ public class Person {
         currentVirus = virus;
         immunities.add(currentVirus.identifier);
     }
-
-    public boolean isSick () {
-        return sick;
-    }
-
-
 
 }
 

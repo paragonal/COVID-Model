@@ -10,16 +10,25 @@ public class Modeler implements Runnable{
     private double dt;
     private double lastUpdate;
     private long startTime;
+    private Renderer renderer;
 
     public static void main(String args[]) {
-        City city = new City("Test City", 10, 10, 1000000);
-        Virus virus = new Virus(1, 50, "Test virus");
+        City city = new City("Test City", 20, 20, 10000);
+        Virus virus = new Virus(1, 10, "Test virus");
 
-        city.initializeSickness(0,0, 5, virus);
+        city.initializeSickness(5,5, 1, virus);
 
-        Modeler m = new Modeler(city, virus, 0.001, 10);
+        Renderer r = new Renderer(city, 10);
+
+        Modeler m = new Modeler(city, virus, 0.01, 50, r);
         Thread logicThread = new Thread(m, "Logic thread");
         logicThread.start();
+
+        //Renderer r = new Renderer(city, 10);
+        //Thread renderThread = new Thread(r, "Render thread");
+        //renderThread.start();
+
+
     }
 
     /**
@@ -28,12 +37,13 @@ public class Modeler implements Runnable{
      * @param dt Time step for people moving
      * @param updateTime How often in milliseconds the model will update
      */
-    public Modeler (City city, Virus virus, double dt, double updateTime) {
+    public Modeler (City city, Virus virus, double dt, double updateTime, Renderer renderer) {
         this.city = city;
         this.virus = virus;
         this.dt = dt;
         this.updateTime = updateTime;
         lastUpdate = 0;
+        this.renderer = renderer;
     }
 
     @Override
@@ -46,6 +56,7 @@ public class Modeler implements Runnable{
                 int newlyInfected = city.update(virus, dt);
                 totalInfected += newlyInfected;
                 System.out.println("New infections:\t" + newlyInfected + "\tTotal sick:\t" + totalInfected);
+                renderer.drawCity(city, 20);
                 lastUpdate = System.currentTimeMillis();
             }
         }

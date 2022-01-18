@@ -68,7 +68,7 @@ public class Neighborhood {
 
     // Count number of infected people
     public int getInfected () {
-        return (int) residents.stream().filter((x) -> (x.isSick())).count();
+        return (int) residents.stream().filter((x) -> (x.sick)).count();
     }
 
     public List<Person> getResidents () {

@@ -42,56 +42,94 @@ class City {
             }
         }
         // Update positions and move people around.
-        for (int i = 0; i < neighborhoods.length; i++) {
-            for (int j = 0; j < neighborhoods[0].length; j++) {
+        for (int j = 0; j < neighborhoods.length; j++) {
+            for (int i = 0; i < neighborhoods[0].length; i++) {
                 Person[] transients = neighborhoods[i][j].updatePositions(dt);
                 for (Person p : transients) {
                     // Get needed change in neighborhood since we're garunteed these people have to move
-                    int di = (int) Math.floor(p.position.y / neighborhoods[i][j].height);
-                    int dj = (int) Math.floor(p.position.x / neighborhoods[i][j].width);
-                    if (i+di < 0 || i + di > height - 1)
+                    int di = (int) Math.floor(p.position.x / neighborhoods[i][j].width);
+                    int dj = (int) Math.floor(p.position.y / neighborhoods[i][j].height);
+                    if (i+di < 0 || i + di > width - 1)
                         di = 0;
-                    if (j+dj < 0 || j + dj > width - 1)
+                    if (j+dj < 0 || j + dj > height - 1)
                         dj = 0;
 
                     // Math to make people move neighborhoods and gain random orthogonal component of velocity
                     Neighborhood destination = neighborhoods[i + di][j + dj];
                     destination.residents.add(p);
-                    if (p.velocity.y < 0) {
-                        p.position.y = destination.height;
-                        p.velocity.x = Util.rng.nextDouble()-.5;
-                        if (di == 0) {
-                            p.position.y = 0;
-                            p.velocity.y *= -1;
-                        }
-                        p.velocity = p.velocity.unit().scale(Util.MAX_VELOCITY);
-                    } else if (p.velocity.y > 0) {
-                        p.position.y = 0;
-                        p.velocity.x = Util.rng.nextDouble()-.5;
-                        if (di == 0) {
-                            p.position.y = destination.height;
-                            p.velocity.y *= -1;
-                        }
-                        p.velocity = p.velocity.unit().scale(Util.MAX_VELOCITY);
+                    if (di > 0) {
+                        p.position.x = 0;
+                        p.velocity.y = Util.rng.nextDouble()-.5;
                     }
-
-                    if (p.velocity.x < 0) {
+                    if (di < 0) {
                         p.position.x = destination.width;
                         p.velocity.y = Util.rng.nextDouble()-.5;
-                        if (dj == 0) {
+                    }
+                    if (dj > 0) {
+                        p.position.y = 0;
+                        p.velocity.x = Util.rng.nextDouble()-.5;
+                    }
+                    if (dj < 0) {
+                        p.position.y = destination.height;
+                        p.velocity.x = Util.rng.nextDouble()-.5;
+                    }
+                    p.velocity = p.velocity.unit().scale(Util.MAX_VELOCITY);
+
+                    if (di == 0 && dj == 0) {
+                        if (p.position.x < 0) {
                             p.position.x = 0;
                             p.velocity.x *= -1;
                         }
-                        p.velocity = p.velocity.unit().scale(Util.MAX_VELOCITY);
-                    } else if (p.velocity.x > 0) {
-                        p.position.x = 0;
-                        p.velocity.y = Util.rng.nextDouble()-.5;
-                        if (dj == 0) {
+                        if (p.position.x > destination.width) {
                             p.position.x = destination.width;
                             p.velocity.x *= -1;
                         }
-                        p.velocity = p.velocity.unit().scale(Util.MAX_VELOCITY);
+                        if (p.position.y < 0) {
+                            p.position.y = 0;
+                            p.velocity.y *= -1;
+                        }
+                        if (p.position.y > destination.height) {
+                            p.position.y = destination.height;
+                            p.velocity.y *= -1;
+                        }
                     }
+
+
+
+
+//                    if (p.velocity.x < 0) {
+//                        p.position.x = destination.width;
+//                        p.velocity.y = Util.rng.nextDouble()-.5;
+//                        if (di == 0) {
+//                            p.position.x = 0;
+//                            p.velocity.x *= -1;
+//                        }
+//                        p.velocity = p.velocity.unit().scale(Util.MAX_VELOCITY);
+//                    } else if (p.velocity.x > 0) {
+//                        p.position.x = 0;
+//                        p.velocity.y = Util.rng.nextDouble()-.5;
+//                        if (di == 0) {
+//                            p.position.x = destination.height;
+//                            p.velocity.x *= -1;
+//                        }
+//                        p.velocity = p.velocity.unit().scale(Util.MAX_VELOCITY);
+//                    } else if (p.velocity.y < 0) {
+//                        p.position.y = destination.height;
+//                        p.velocity.x = Util.rng.nextDouble()-.5;
+//                        if (dj == 0) {
+//                            p.position.y = 0;
+//                            p.velocity.y *= -1;
+//                        }
+//                        p.velocity = p.velocity.unit().scale(Util.MAX_VELOCITY);
+//                    } else if (p.velocity.y > 0) {
+//                        p.position.y = 0;
+//                        p.velocity.x = Util.rng.nextDouble()-.5;
+//                        if (dj == 0) {
+//                            p.position.y = destination.width;
+//                            p.velocity.y *= -1;
+//                        }
+//                        p.velocity = p.velocity.unit().scale(Util.MAX_VELOCITY);
+//                    }
                 }
             }
         }
@@ -102,6 +140,10 @@ class City {
         for (int l = 0; l < Math.min(neighborhoods[i][j].residents.size(), numToInfect); l++) {
             neighborhoods[i][j].residents.get(l).makeSick(virus);
         }
+    }
+
+    public Neighborhood getNeighborhood(int i, int  j) {
+        return neighborhoods[i][j];
     }
 
     public String getCityName() {
