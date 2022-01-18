@@ -16,16 +16,22 @@ public class Renderer implements Runnable {
     private double updateTime;
     private double lastUpdate;
     private City model;
+    private int width, height;
+    private int drawUnit;
 
-    public Renderer (City city, double updateTime) {
+    public Renderer (City city, double updateTime, int width, int height, int drawUnit) {
+        this.width = width;
+        this.height = height;
+        this.drawUnit = drawUnit;
+
         this.scene= new JFrame();
         this.currentImage = new JPanel();
-        this.bufferedImage = new BufferedImage(1000,1000, BufferedImage.TYPE_INT_RGB);
+        this.bufferedImage = new BufferedImage(width+50,height+50, BufferedImage.TYPE_INT_RGB);
         this.bufferedGraphics = bufferedImage.createGraphics();
 
         this.scene.add(currentImage);
         this.scene.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        this.scene.setSize(1000,1000);
+        this.scene.setSize(width+50,height+50);
         this.scene.setVisible(true);
 
         this.updateTime = updateTime;
@@ -36,12 +42,11 @@ public class Renderer implements Runnable {
     /**
      *
      * @param city
-     * @param drawUnit Length of a side of a city, for standardizing
      */
-    public void drawCity(City city, int drawUnit) {
+    public void drawCity(City city) {
         Graphics g = bufferedGraphics;
         g.setColor(Color.WHITE);
-        g.fillRect(0,0, 1000,1000);
+        g.fillRect(0,0, width + 50,height + 50);
 
         for (int i = 0; i < city.width; i++) {
             for (int j = 0; j < city.height; j++) {
@@ -70,7 +75,7 @@ public class Renderer implements Runnable {
         while (true) {
             if (System.currentTimeMillis() - lastUpdate > updateTime) {
 
-                drawCity(model, 50);
+                drawCity(model);
 
                 lastUpdate = System.currentTimeMillis();
             }

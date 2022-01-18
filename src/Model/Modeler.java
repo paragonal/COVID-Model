@@ -13,14 +13,17 @@ public class Modeler implements Runnable{
     private Renderer renderer;
 
     public static void main(String args[]) {
-        City city = new City("Test City", 20, 20, 10000);
-        Virus virus = new Virus(1, 10, "Test virus");
+        int width = 100;
+        int height = 100;
+
+        City city = new City("Test City", width, height, 10000);
+        Virus virus = new Virus(1, 100, "Test virus");
 
         city.initializeSickness(5,5, 1, virus);
+        int drawDims = 500;
+        Renderer r = new Renderer(city, 10,drawDims,drawDims,drawDims/width);
 
-        Renderer r = new Renderer(city, 10);
-
-        Modeler m = new Modeler(city, virus, 0.01, 50, r);
+        Modeler m = new Modeler(city, virus, 0.1, 50, r);
         Thread logicThread = new Thread(m, "Logic thread");
         logicThread.start();
 
@@ -56,7 +59,7 @@ public class Modeler implements Runnable{
                 int newlyInfected = city.update(virus, dt);
                 totalInfected += newlyInfected;
                 System.out.println("New infections:\t" + newlyInfected + "\tTotal sick:\t" + totalInfected);
-                renderer.drawCity(city, 20);
+                renderer.drawCity(city);
                 lastUpdate = System.currentTimeMillis();
             }
         }
